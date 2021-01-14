@@ -1,27 +1,19 @@
 <template>
   <q-page class="q-pa-md">
-    <div>
-    </div>
-    <Map/>
+    <div></div>
+    <Map />
   </q-page>
 </template>
 <script>
 /*eslint-disable */
 
-
 export default {
-  name: 'Outdoor',
+  name: "Outdoor",
   data() {
-    return {
-      
-    }
+    return {};
   },
-  components:{
-    'Map': require('components/Map.vue').default
+  components: {
+    Map: require("components/Map.vue").default
   }
-}
-
+};
 </script>
-
-
-

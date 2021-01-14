@@ -15,6 +15,7 @@
     "core-js": "^3.6.5",
     "jsonwebtoken": "^8.5.1",
     "quasar": "^1.0.0",
+    "vue-browser-geolocation": "^1.8.0",
     "vue2-google-maps": "^0.10.7"
   },
   "devDependencies": {
