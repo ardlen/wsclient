@@ -1,0 +1,54 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+      {
+        "name": "Attach to Chrome",
+        "port": 9222,
+        "request": "attach",
+        "urlFilter": "http://localhost:4200/*",
+        "type": "chrome",
+        "webRoot": "${workspaceFolder}"
+      },
+
+
+
+      // {
+      //   "name": "Launch Chrome",
+      //   "request": "launch",
+      //   "type": "chrome",
+      //   "url": "http://localhost:8082",
+      //   "webRoot": "${workspaceFolder}",
+      //   "sourceMapPathOverrides": {
+      //           "webpack://Module/*": "${workspaceFolder}/Module/*"
+      //       }
+      // },
+
+      {
+  "type": "chrome",
+  "request": "launch",
+  "name": "Quasar App: chrome",
+  "url": "http://localhost:8082",
+  // To properly reflect changes after HMR with Vite
+  "enableContentValidation": false,
+  "webRoot": "${workspaceFolder}/src",
+//  "outFiles": ["${workspaceRoot}/compiled/**/*.js"],
+  // No need to configure sourcemap explicitly for vite.
+  // "sourceMapPathOverrides": {
+  //   "webpack://package-name/./src/*": "${webRoot}/*"
+
+  // }
+  "sourceMapPathOverrides": {
+      "webpack:/*": "${webRoot}/*",
+      "/./*": "${webRoot}/*",
+      "/src/*": "${webRoot}/*",
+      "/*": "*",
+      "/./~/*": "${webRoot}/node_modules/*"
+    },
+}
+
+    ]
+}

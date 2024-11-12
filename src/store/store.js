@@ -1,27 +1,13 @@
-/*eslint-disable */
+// console.log(`Payload data DevEUI:${state.messageIoT.DevEui}, ${state.messageIoT.da}),`);
+// console.log(`Payload data DevEUI:${payload.data.DevEui}),
+// Ew: ${payload.data.Pos[0].Ew}, Ns: ${payload.data.Pos[0].Ns}
+// Major:${payload.data.DataContext[0].Data[0].Major},
+// Minor:${payload.data.DataContext[0].Data[0].Minor},
+// TxRssi:${payload.data.DataContext[0].Data[0].TxRssi}`);
 
-import Vue from 'vue';
+/*eslint-disable */
 import Centrifuge from 'centrifuge';
 import Token from 'jsonwebtoken';
-
-
-const removerAcentos = (string) => {
-  const mapaAcentosHex = {
-    a: /[\xE0-\xE6]/g,
-    e: /[\xE8-\xEB]/g,
-    i: /[\xEC-\xEF]/g,
-    o: /[\xF2-\xF6]/g,
-    u: /[\xF9-\xFC]/g,
-    c: /\xE7/g
-  }
-
-  for (let letra in mapaAcentosHex) {
-    var expressaoRegular = mapaAcentosHex[letra]
-    string = string.replace(expressaoRegular, letra)
-  }
-
-  return string
-}
 
 /*eslint-disable */
 const state = () =>({
@@ -30,14 +16,17 @@ const state = () =>({
 	users: {},
   messageIoT:{},
   messageIoTN:{},
-  listTrackers:[],
   filter_list:{},
-  cmd:{},   
+
+})
+
+const state_cmd = ()=>({
+  cmd:{}
 })
 
 let centrifuge = {};
 let initF = false;
-let Res = null 
+let Res = null
 var result = null;
 var existDevEui = {};
 var messagePos = {
@@ -49,16 +38,16 @@ var messagePos = {
 var ctx={}
 
 const mutations = {
-
+  // Commit Uplink payload
 	saveMessage(state, payload) {
-       state.messageIoT = payload.data     
-       
-    },
-  addListTrackers(state,payload){
-  },
+  // Filtering data context received from share subscription, state change - device data only
+    if( payload.data.DevEui !== undefined){
+     state.messageIoT = payload.data}
 
-  MsendCmdC(state,payload){
-         state.cmd = payload        
+    },
+
+  MsendCmdC(state_cmd,payload){
+        state_cmd.cmd = payload
   },
 
   convertStr(state, payload ) {
@@ -70,47 +59,40 @@ const mutations = {
         BeaconData: {
           B1: {
             Data: {
-              Major: payload.data.DataContext[0].Data[0].Major,
-              Minor: payload.data.DataContext[0].Data[0].Minor,
-              TxRssi: payload.data.DataContext[0].Data[0].TxRssi
+             Major: payload.data.DataContext[0].Data[0].Major,
+             Minor: payload.data.DataContext[0].Data[0].Minor,
+             TxRssi: payload.data.DataContext[0].Data[0].TxRssi
             }
           }
         }
       };
       state.messageIoTN = ctx
-      console.log("convert ctx->", ctx);      
+      console.log("convert ctx->", ctx);
     }
-
-  
-      
-};
+   };
 
 const getters = {
- GsendCmdC:(state) => { 
-    return state.cmd
+ GsendCmdC:(state_cmd) => {
+    return state_cmd.cmd
     },
-    
- messageIoT:(state) => { 
-    return state.messageIoT 
-  } 
 
-
+ messageIoT:(state) => {
+    return state.messageIoT
+  }
 };
-
+// Actions in store
 const actions = {
-	connectWs({ commit} , payload) {
+	connectWs({ commit} , _payload) {
  		var user = 'ardlen';
 		var privateKey = '6099a6cb-cce8-4e54-b7e3-9c5ef27f1b5a';
 		var clToken = Token.sign({ sub: 'ardlen' }, privateKey);
+// Create webscoket client Centrefuge
 		centrifuge = new Centrifuge('ws://localhost:8000/connection/websocket');
 		centrifuge.setToken(clToken);
-		// Subscribe and recive message
-		centrifuge.subscribe('iotWorkSafety', function(message) {
-  //   console.log('subscribe', message);
-      commit('saveMessage', message);   
-     // commit('convertStr', message);   
-    //commit('addListTrackers', messagePos);
-     
+// Subscribe and recive message
+		centrifuge.subscribe('iotWorkSafety', function(messageIoT) {
+    commit('saveMessage', messageIoT);
+
 		});
 	   	centrifuge.connect();
 	   	centrifuge.on('connect', function(ctx) {
@@ -121,26 +103,28 @@ const actions = {
 			console.log('disconnected', ctx);
 		});
 	},
+
 	closeConnect() {
 	centrifuge.disconnect()},
 
+  //Publish message (command for device) in iotWorkSafety chanel
 	 cmdSend({commit}, payload) {
-    console.log(`send command:${payload.cmd} to tracker:${payload.idtracker}`); 
-    centrifuge.publish("iotWorkSafety", {"cmd ":payload.cmd ,"idtracker":payload.idtracker }).then(function() {
-      console.log('successfully published');
-      commit('MsendCmdC',payload)
+    centrifuge.publish("iotWorkSafety", {"Idtracker":payload.idtracker, "Cmd":payload.cmd  }).then(function() {
+    console.log(`Successfully published devEUI:${payload.idtracker} Cmd:${payload.cmd}`);
+    commit('MsendCmdC',payload)
        return true
       }, function(err) {
-          console.log('publish error', err);
-      return false        
-      })    
-     },   
+          console.log(`publish error :${err}:${payload.idtracker}`);
+      return false
+      })
+     },
 };
 
 export default {
 namespaced: true,
 state,
+state_cmd,
 actions,
 mutations ,
-getters,	
+getters,
 };

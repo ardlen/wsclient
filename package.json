@@ -11,14 +11,24 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.9.12",
+    "@vueuse/core": "^11.1.0",
     "centrifuge": "^2.6.4",
     "core-js": "^3.6.5",
+    "gmap-vue": "^3.5.4",
+    "googlemap-custom-marker-vue": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
+    "leaflet": "^1.9.4",
+    "moment": "^2.30.1",
+    "numeric": "^1.2.6",
     "quasar": "^1.0.0",
-    "vue2-google-maps": "^0.10.7"
+    "vue-browser-geolocation": "^1.8.0",
+    "vue2-gmap-custom-marker": "^6.1.1",
+    "vue2-google-maps": "^0.10.7",
+    "vue2-leaflet": "^2.7.1"
   },
   "devDependencies": {
     "@quasar/app": "^2.1.13",
+    "@types/numeric": "^1.2.6",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
